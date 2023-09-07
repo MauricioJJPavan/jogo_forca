@@ -1,0 +1,124 @@
+import random
+from colorama import Fore, Style  # Importa o Colorama para formatação de texto
+
+# Passo 1: Definir a lista de palavras possíveis POR TEMA (ANIMAIS, CARROS, PAISES, COMIDAS, FERRAMENTAS)
+temas = {
+    "ANIMAIS": ["GATO", "CACHORRO", "ELEFANTE", "LEOPARDO", "TIGRE", "GIRRAFA", "RINOCERONTE", "HIPOPOTAMO", "LEAO", "MACACO"],
+    "CARROS": ["FERRARI", "PORSCHE", "LAMBORGHINI", "TOYOTA", "HONDA", "BMW", "MERCEDES", "AUDI", "JAGUAR", "TESLA"],
+    "PAISES": ["BRASIL", "ESTADOSUNIDOS", "CANADA", "ALEMANHA", "AUSTRALIA", "JAPAO", "FRANCA", "ITALIA", "ESPANHA", "MEXICO"],
+    "COMIDAS": ["PIZZA", "HAMBURGUER", "SUSHI", "LASANHA", "TACOS", "ESPAGUETE", "SALADA", "PASTEL", "EMPADA", "CHURRASCO"],
+    "FERRAMENTAS": ["MARTELO", "CHAVEDEFENDA", "SERROTE", "ALICATE", "PARAFUSO", "NIVEL", "TRENA", "MARRETA", "SERRACIRCULAR", "CHAVETA"],
+    "CIDADES": ["NOVAIORQUE", "LONDRES", "TOKYO", "PARIS", "ROMA", "RIODEJANEIRO", "LOSANGELES", "MOSCOU", "PEQUIM", "DUBAI"],
+    "ESPORTES": ["FUTEBOL", "BASQUETE", "TENIS", "NATACAO", "VOLEI", "GOLF", "HANDEBOL", "CICLISMO", "BOXE", "SURF"],
+    "FILMES": ["TITANIC", "STARWARS", "MATRIX", "AVATAR", "INCEPTION", "GLADIATOR", "FORRESTGUMP", "JURASSICPARK", "PULPFICTION", "INTERSTELLAR"],
+    "FRUTAS": ["MORANGO", "BANANA", "MACA", "LARANJA", "UVA", "ABACAXI", "MELANCIA", "PESSEGO", "KIWI", "MANGA"],
+    "PROFISSOES": ["MEDICO", "ADVOGADO", "PROFESSOR", "ENGENHEIRO", "DENTISTA", "COZINHEIRO", "POLICIAL", "ARTISTA", "BOMBEIRO", "NUTRICIONISTA"],
+    "SUPER HEROIS": ["DEMOLIDOR", "BATMAN", "SUPERMAN", "WONDERWOMAN", "IRONMAN", "THOR", "HULK", "WOLVERINE", "FLASH", "DEADPOOL"]
+}
+
+
+# Passo 1.1: O jogador escolhe um tema
+print("Escolha um tema:")
+for i, tema in enumerate(temas.keys(), start=1):
+    print(f"{i}. {tema}")
+
+escolha_tema = int(input("Digite o número do tema: "))
+tema_escolhido = list(temas.keys())[escolha_tema - 1]
+
+print("Dica: As palavras não tem espaço entre elas. Exemplo: CRAVODAINDIA")
+
+# Passo 1.2: Crie uma lista de palavras aleatórias no tema escolhido
+palavras_aleatorias = random.sample(temas[tema_escolhido], 10)
+
+# Passo 3: Criar uma lista vazia para armazenar as letras adivinhadas
+letras_adivinhadas = []
+letras_erradas = []
+
+
+# Passo 3: Criar uma lista vazia para armazenar as letras adivinhadas
+letras_adivinhadas = []
+
+# Passo 4: Definir o número máximo de tentativas permitidas
+tentativas_maximas = 6
+
+# Define a função para exibir o desenho da forca
+def exibir_forca(erros):
+    forca = [
+        "__________________",
+        "|                 |",
+        "|                  ",
+        "|                  ",
+        "|                  ",
+        "|                  ",
+        "|                  ",
+        "|___",
+        "|    |____",
+        "|          |_____",
+        "|_________________|"
+    ]
+    
+    if erros > 0:
+        forca[2] = "|                 O"
+    if erros > 1:
+        forca[3] = "|                \\|"
+    if erros > 2:
+        forca[3] = "|                \\|/"
+    if erros > 3:
+        forca[4] = "|                 |"
+    if erros > 4:
+        forca[5] = "|                /"
+    if erros > 5:
+        forca[5] = "|                / \\"
+        
+    for linha in forca:
+        print(linha)
+
+
+# Passo 5: Enquanto o número de tentativas não atingir o limite máximo
+tentativas = 0
+palavra_oculta = ["_" if letra != " " else " " for letra in palavra_escolhida]
+
+while tentativas < tentativas_maximas:
+    # a. Mostrar a palavra como uma série de underscores, com as letras adivinhadas preenchidas nos espaços corretos
+    print("".join(palavra_oculta))
+    
+    # Mostrar todas as letras (certas e erradas) já digitadas
+    letras_digitadas = letras_adivinhadas + letras_erradas
+    if letras_digitadas:
+        print(Fore.YELLOW + f"Letras já digitadas: {' '.join(letras_digitadas)}{Style.RESET_ALL}")
+    
+    # b. Pedir ao jogador que adivinhe uma letra
+    letra_adivinhada = input("Adivinhe uma letra: ").upper()
+    
+    # Verificar se a entrada do jogador é uma letra
+    if not letra_adivinhada.isalpha():
+        print("Entrada inválida. Digite apenas letras.")
+        continue
+    
+    # Verificar se a letra já foi digitada (correta ou incorretamente)
+    if letra_adivinhada in letras_digitadas:
+        print("Você já digitou essa letra antes. Tente novamente.")
+        continue
+    
+    # c. Verificar se a letra adivinhada está na palavra
+    if letra_adivinhada in palavra_escolhida:
+        letras_adivinhadas.append(letra_adivinhada)
+        for i, letra in enumerate(palavra_escolhida):
+            if letra == letra_adivinhada:
+                palavra_oculta[i] = letra_adivinhada
+        print(Fore.GREEN + f"Letra correta!")
+    else:
+        # e. Se a letra adivinhada não está na palavra, reduzir o número de tentativas restantes
+        tentativas += 1
+        letras_erradas.append(letra_adivinhada)
+        print(Fore.RED + f"Letra incorreta. Tentativas restantes: {tentativas_maximas - tentativas}{Style.RESET_ALL}")
+        exibir_forca(tentativas)
+
+    # f. Verificar se todas as letras da palavra foram adivinhadas
+    if "_" not in palavra_oculta:
+        print(f"Você venceu! A palavra era: '{palavra_escolhida}'")
+        break
+
+# h. Se o número de tentativas restantes chegar a zero, exibir a mensagem "Você perdeu. A palavra era [palavra escolhida]" e encerrar o jogo.
+if tentativas == tentativas_maximas:
+    print(f"Você morreu. A palavra era: '{palavra_escolhida}'")
